@@ -302,58 +302,70 @@ const body = document.getElementById('chatBody');
 toggleBtn.onclick = () => chatbot.classList.toggle('show');
 closeBtn.onclick = () => chatbot.classList.remove('show');
 
-const replies = [
+const knowledgeBase = [
     {
-        keywords: ['name', 'who'],
-        answer: "My name is Ali Muhammad Ali, a technology and digital innovation student."
+        patterns: [/name/i, /who are you/i, /introduce yourself/i],
+        answer: "Hello! I’m Ali Muhammad Ali, a senior student passionate about technology, digital innovation, and volunteering. I love learning new skills and taking on challenges. Would you like to know about my skills or experience first?"
     },
     {
-        keywords: ['skills', 'skill'],
-        answer: "Ali’s skills include Python, HTML, CSS, JavaScript, Git & GitHub, and Data Analysis."
+        patterns: [/skills/i, /what can you do/i, /technologies/i, /expertise/i, /programming/i],
+        answer: "Ali has a diverse skill set including:\n- Python (75%)\n- HTML (85%)\n- CSS (80%)\n- JavaScript (70%)\n- Git & GitHub (75%)\n- Video Editing (90%)\nThese skills are applied in projects, volunteering work, and personal initiatives. Do you want me to explain each skill in detail?"
     },
     {
-        keywords: ['volunteer', 'experience'],
-        answer: "Ali volunteered as Vice Head of Media at DSC Cairo University, Marketing at Cairo University Racing Team, and Graphic Designer at LINK CU."
+        patterns: [/volunteer/i, /experience/i, /projects/i, /activities/i, /work experience/i],
+        answer: "Ali’s volunteering experience includes:\n- Vice Head of Media at DSC Cairo University\n- Digital Marketing Member at DSC Cairo University\n- Marketing Member at Cairo University Racing Team\n- Graphic Design Member at LINK CU\nThese roles helped develop leadership, teamwork, and digital skills. Would you like to know what Ali learned from each role?"
     },
     {
-        keywords: ['contact', 'email'],
-        answer: "You can contact Ali via the business form on this page or by email at alimohamedali851@gmail.com."
+        patterns: [/education/i, /study/i, /university/i, /college/i],
+        answer: "Ali is currently pursuing an English Translation degree at Cairo University, expected graduation in 2026. Education focuses on language, communication, and interdisciplinary learning. Do you want more details about his courses or achievements?"
     },
     {
-        keywords: ['job', 'work', 'intern'],
-        answer: "Ali is open to internships, volunteering, and junior opportunities."
+        patterns: [/contact/i, /email/i, /reach/i, /message/i, /get in touch/i],
+        answer: "You can contact Ali via the business inquiry form on this page or directly by email at alimohamedali851@gmail.com. He usually replies promptly!"
+    },
+    {
+        patterns: [/job/i, /intern/i, /work/i, /opportunity/i, /career/i],
+        answer: "Ali is open to internships, volunteering, and junior opportunities in technology, digital innovation, and data analysis. Are you looking for internship opportunities or collaboration?"
+    },
+    {
+        patterns: [/objective/i, /goal/i, /aim/i, /career objective/i],
+        answer: "Ali’s career objective is to gain hands-on experience in technology, data analysis, and digital innovation, while contributing positively to teams and projects."
+    },
+    {
+        patterns: [/thank/i, /thanks/i],
+        answer: "You’re welcome! 😊 If you have more questions about Ali’s skills, experience, or education, just ask!"
     }
 ];
 
-form.onsubmit = e => {
-    e.preventDefault();
-    const msg = input.value.toLowerCase();
-
-    body.innerHTML += `<div class="user-msg">${input.value}</div>`;
-    input.value = "";
-
-    let response = "Thanks for your message! You can ask about skills, volunteering, or contact info.";
-
-    for (let r of replies) {
-        if (r.keywords.some(k => msg.includes(k))) {
-            response = r.answer;
-            break;
+function getReply(msg) {
+    for (let item of knowledgeBase) {
+        if (item.patterns.some(pattern => pattern.test(msg))) {
+            return item.answer;
         }
     }
+    return "I’m here to answer questions about Ali’s CV, skills, volunteering, education, and contact info. Could you ask in another way?";
+}
+
+form.onsubmit = e => {
+    e.preventDefault();
+    const userText = input.value;
+    body.innerHTML += `<div class="user-msg">${userText}</div>`;
+    input.value = "";
+    body.scrollTop = body.scrollHeight;
+
+    const response = getReply(userText.toLowerCase());
 
     setTimeout(() => {
-        body.innerHTML += `<div class="bot-msg">${response}</div>`;
+        body.innerHTML += `<div class="bot-msg">${response.replace(/\n/g,"<br>")}</div>`;
         body.scrollTop = body.scrollHeight;
     }, 500);
 };
 </script>
-
 <body>
 
 <header>
     <h1>Ali Muhammad Ali</h1>
     <p>Technology • Digital Innovation • Volunteering Experience</p>
-
     <div class="controls">
         <button onclick="window.print()">
             <i class="fa-solid fa-file-pdf"></i> Export PDF
@@ -471,3 +483,4 @@ form.onsubmit = e => {
 
 </body>
 </html>
+

@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ali Muhammad Ali | Interactive CV</title>
+<title>Ali Muhammad Ali | Advanced Interactive CV</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
 :root {
@@ -14,36 +15,39 @@
     --border: rgba(255,255,255,0.15);
     --text: #ffffff;
     --muted: #c7c7c7;
-
     --pink: #ff4ecd;
     --blue: #4cc9f0;
     --purple: #7c4dff;
     --green: #2de2a6;
 }
 
-* {
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-}
-
 body {
     margin: 0;
-    min-height: 100vh;
-    background:
-        radial-gradient(circle at top left, #7c4dff40, transparent 40%),
-        radial-gradient(circle at bottom right, #ff4ecd40, transparent 40%),
-        var(--bg);
+    font-family: 'Poppins', sans-serif;
+    background: var(--bg);
     color: var(--text);
 }
 
-/* HEADER */
+/* ===== ATS MODE ===== */
+body.ats {
+    background: white;
+    color: black;
+}
+body.ats * {
+    color: black !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    animation: none !important;
+}
+
+/* ===== HEADER ===== */
 header {
     text-align: center;
     padding: 3rem 1rem 2rem;
 }
 
 header h1 {
-    font-size: clamp(2rem, 6vw, 2.8rem);
+    font-size: 2.4rem;
     background: linear-gradient(90deg, var(--pink), var(--blue));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -51,119 +55,121 @@ header h1 {
 
 header p {
     color: var(--muted);
-    margin: 0.4rem 0;
+    margin: 0.3rem 0;
 }
 
-header a {
-    color: var(--green);
-    text-decoration: none;
+.controls {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+button {
+    padding: 0.6rem 1.2rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--glass);
+    color: var(--text);
+    cursor: pointer;
     font-weight: 600;
 }
 
-/* GRID */
+/* ===== GRID ===== */
 main {
     padding: 2rem;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
 }
 
-/* CARD */
+/* ===== CARDS ===== */
 .card {
     background: var(--glass);
-    backdrop-filter: blur(14px);
     border: 1px solid var(--border);
     border-radius: 18px;
     padding: 1.5rem;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-
-    opacity: 0;
-    transform: translateY(40px);
+    transition: transform 0.4s ease, box-shadow 0.4s;
 }
 
-.card.show {
-    opacity: 1;
-    transform: translateY(0);
-    transition: 0.8s ease;
-}
-
-.card:hover {
-    transform: translateY(-8px) scale(1.03);
-    box-shadow:
-        0 0 25px rgba(124,77,255,0.4),
-        0 0 50px rgba(255,78,205,0.25);
+@media (hover:hover) {
+    .card:hover {
+        transform: perspective(1000px) rotateX(5deg) rotateY(-5deg) scale(1.03);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    }
 }
 
 .card h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
     margin-bottom: 1rem;
-    background: linear-gradient(90deg, var(--blue), var(--purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
 }
 
-.card p, li {
-    color: var(--muted);
-    line-height: 1.6;
-}
-
-/* LIST */
-ul {
-    padding-left: 1.2rem;
-}
-
-/* PROJECT LINK */
-.project-link {
-    display: inline-block;
-    margin-top: 1rem;
-    padding: 0.6rem 1.2rem;
-    border-radius: 999px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-decoration: none;
-    color: white;
-    background: linear-gradient(135deg, var(--green), var(--blue));
-    transition: 0.3s ease;
-}
-
-.project-link:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 20px rgba(76,201,240,0.7);
-}
-
-/* PROGRESS BARS */
+/* ===== SKILLS ===== */
 .skill {
     margin-bottom: 1rem;
 }
 
-.skill span {
-    font-size: 0.85rem;
+.skill-name {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
 }
 
 .bar {
     height: 8px;
-    width: 100%;
     background: rgba(255,255,255,0.15);
     border-radius: 999px;
     overflow: hidden;
+}
+
+.fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pink), var(--purple));
+    border-radius: 999px;
+}
+
+/* ===== TIMELINE ===== */
+.timeline-item {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    background: var(--green);
+    border-radius: 50%;
     margin-top: 0.3rem;
 }
 
-.bar-fill {
-    height: 100%;
-    width: 0;
-    background: linear-gradient(90deg, var(--pink), var(--purple));
-    border-radius: 999px;
-    transition: width 1.5s ease;
+/* ===== CONTACT FORM ===== */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
 }
 
-/* FOOTER */
+input, textarea {
+    padding: 0.7rem;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--glass);
+    color: var(--text);
+}
+
 footer {
     text-align: center;
     padding: 2rem;
-    font-size: 0.8rem;
     color: var(--muted);
+}
+
+/* ===== PRINT ===== */
+@media print {
+    .controls { display: none; }
 }
 </style>
 </head>
@@ -172,97 +178,122 @@ footer {
 
 <header>
     <h1>Ali Muhammad Ali</h1>
-    <p>Cybersecurity • Technology • Digital Innovation</p>
-    <p>📍 Giza, Cairo • 📧 alimohamedali851@gmail.com • 📞 01559995818</p>
-    <a href="https://www.linkedin.com/in/ali-muhammad-alii" target="_blank">LinkedIn Profile</a>
+    <p>Technology • Digital Innovation • Volunteering Experience</p>
+
+    <div class="controls">
+        <button onclick="window.print()">
+            <i class="fa-solid fa-file-pdf"></i> Export PDF
+        </button>
+        <button onclick="document.body.classList.toggle('ats')">
+            <i class="fa-solid fa-robot"></i> ATS Mode
+        </button>
+    </div>
 </header>
 
 <main>
 
 <div class="card">
-    <h2>Career Objective</h2>
-    <p>Motivated student passionate about cybersecurity and digital innovation, seeking hands-on experience.</p>
+    <h2><i class="fa-solid fa-bullseye"></i> Career Objective</h2>
+    <p>
+        Motivated senior student passionate about technology, data analysis,
+        and digital innovation, seeking hands-on experience and growth.
+    </p>
 </div>
 
 <div class="card">
-    <h2>Education</h2>
+    <h2><i class="fa-solid fa-graduation-cap"></i> Education</h2>
     <p><strong>Cairo University</strong></p>
     <p>English Translation Program</p>
     <p>Expected Graduation: 2026</p>
 </div>
 
 <div class="card">
-    <h2>Certificates</h2>
-    <ul>
-        <li>Data Analysis – MCIT</li>
-        <li>EF SET English (C1)</li>
-        <li>Python – DataCamp</li>
-        <li>Git & GitHub</li>
-    </ul>
-</div>
+    <h2><i class="fa-solid fa-hands-helping"></i> Volunteering Experience</h2>
 
-<div class="card">
-    <h2>Project</h2>
-    <p><strong>Gaming Book 🎮</strong></p>
-    <p>Interactive gaming information hub using HTML, CSS & JavaScript.</p>
-    <a class="project-link" href="https://gamingbook-byali.neocities.org/" target="_blank">
-        🔗 View Live Project
-    </a>
-</div>
-
-<div class="card">
-    <h2>Skills</h2>
-
-    <div class="skill">
-        <span>HTML / CSS</span>
-        <div class="bar"><div class="bar-fill" data-width="90%"></div></div>
+    <div class="timeline-item">
+        <span class="dot"></span>
+        <p><strong>Vice Head of Media</strong> — DSC Cairo University</p>
     </div>
 
-    <div class="skill">
-        <span>JavaScript</span>
-        <div class="bar"><div class="bar-fill" data-width="75%"></div></div>
+    <div class="timeline-item">
+        <span class="dot"></span>
+        <p><strong>Digital Marketing</strong> — DSC Cairo University</p>
     </div>
 
-    <div class="skill">
-        <span>Python</span>
-        <div class="bar"><div class="bar-fill" data-width="80%"></div></div>
+    <div class="timeline-item">
+        <span class="dot"></span>
+        <p><strong>Marketing</strong> — Cairo University Racing Team</p>
     </div>
 
-    <div class="skill">
-        <span>Cybersecurity</span>
-        <div class="bar"><div class="bar-fill" data-width="70%"></div></div>
+    <div class="timeline-item">
+        <span class="dot"></span>
+        <p><strong>Graphic Design</strong> — LINK CU</p>
     </div>
 </div>
 
 <div class="card">
-    <h2>Languages</h2>
-    <p>Arabic — Native</p>
-    <p>English — Advanced (C1)</p>
+    <h2><i class="fa-solid fa-chart-line"></i> Skills</h2>
+
+    <div class="skill">
+        <div class="skill-name"><span>Python</span><span>75%</span></div>
+        <div class="bar"><div class="fill" style="width:75%"></div></div>
+    </div>
+
+    <div class="skill">
+        <div class="skill-name"><span>HTML</span><span>85%</span></div>
+        <div class="bar"><div class="fill" style="width:85%"></div></div>
+    </div>
+
+    <div class="skill">
+        <div class="skill-name"><span>CSS</span><span>80%</span></div>
+        <div class="bar"><div class="fill" style="width:80%"></div></div>
+    </div>
+
+    <div class="skill">
+        <div class="skill-name"><span>JavaScript</span><span>70%</span></div>
+        <div class="bar"><div class="fill" style="width:70%"></div></div>
+    </div>
+
+    <div class="skill">
+        <div class="skill-name"><span>Git & GitHub</span><span>75%</span></div>
+        <div class="bar"><div class="fill" style="width:75%"></div></div>
+    </div>
+
+    <div class="skill">
+        <div class="skill-name"><span>Data Analysis</span><span>70%</span></div>
+        <div class="bar"><div class="fill" style="width:70%"></div></div>
+    </div>
+</div>
+
+<div class="card">
+    <h2><i class="fa-solid fa-envelope"></i> Business Inquiry</h2>
+ <!-- modify this form HTML and place wherever you want your form -->
+<form
+  action="https://formspree.io/f/mzdpavbw"
+  method="POST"
+>
+  
+    <label>
+     
+        <input type="email" name="email" placeholder="Enter your email" required>
+    </label>
+
+    <label>
+        
+        <textarea name="message" rows="4" placeholder="Write your message here..." required></textarea>
+    </label>
+
+    <button type="submit">Send Message</button>
+
+</form>
+</form>
 </div>
 
 </main>
 
 <footer>
-    © 2025 Ali Muhammad Ali • Neon CV
+    © 2025 Ali Muhammad Ali
 </footer>
-
-<script>
-/* Scroll Animation */
-const cards = document.querySelectorAll('.card');
-const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('show');
-
-            entry.target.querySelectorAll('.bar-fill').forEach(bar => {
-                bar.style.width = bar.dataset.width;
-            });
-        }
-    });
-}, { threshold: 0.2 });
-
-cards.forEach(card => observer.observe(card));
-</script>
 
 </body>
 </html>

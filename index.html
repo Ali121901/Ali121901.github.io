@@ -171,8 +171,178 @@ footer {
 @media print {
     .controls { display: none; }
 }
+
+/* ===== CHATBOT ===== */
+.chatbot-btn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 55px;
+    height: 55px;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: white;
+    font-size: 1.3rem;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(255,78,205,0.6);
+    z-index: 200;
+}
+
+.chatbot {
+    position: fixed;
+    bottom: 90px;
+    right: 25px;
+    width: 300px;
+    max-height: 420px;
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    display: none;
+    flex-direction: column;
+    z-index: 200;
+}
+
+.chatbot.show {
+    display: flex;
+}
+
+.chat-header {
+    padding: 0.8rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+}
+
+.chat-body {
+    padding: 1rem;
+    overflow-y: auto;
+    font-size: 0.85rem;
+}
+
+.bot-msg, .user-msg {
+    margin-bottom: 0.6rem;
+    padding: 0.5rem 0.7rem;
+    border-radius: 10px;
+}
+
+.bot-msg {
+    background: rgba(255,255,255,0.12);
+}
+
+.user-msg {
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    color: white;
+    align-self: flex-end;
+}
+
+.chat-input {
+    display: flex;
+    border-top: 1px solid var(--border);
+}
+
+.chat-input input {
+    flex: 1;
+    border: none;
+    padding: 0.7rem;
+    background: transparent;
+    color: var(--text);
+}
+
+.chat-input button {
+    border: none;
+    background: transparent;
+    color: var(--green);
+    padding: 0 1rem;
+    cursor: pointer;
+}
+
 </style>
 </head>
+
+<!-- CHATBOT BUTTON -->
+<div class="chatbot-btn" id="chatbotToggle">
+    <i class="fa-solid fa-comment-dots"></i>
+</div>
+
+<!-- CHATBOT WINDOW -->
+<div class="chatbot" id="chatbot">
+    <div class="chat-header">
+        <span>Ali AI Assistant</span>
+        <button id="closeChat">×</button>
+    </div>
+
+    <div class="chat-body" id="chatBody">
+        <div class="bot-msg">
+            👋 Hi! I’m Ali’s assistant.  
+            Ask me about skills, volunteering, or contact info.
+        </div>
+    </div>
+
+    <form class="chat-input" id="chatForm">
+        <input type="text" id="userInput" placeholder="Type your message..." required>
+        <button type="submit"><i class="fa-solid fa-paper-plane"></i></button>
+    </form>
+</div>
+<script>
+const chatbot = document.getElementById('chatbot');
+const toggleBtn = document.getElementById('chatbotToggle');
+const closeBtn = document.getElementById('closeChat');
+const form = document.getElementById('chatForm');
+const input = document.getElementById('userInput');
+const body = document.getElementById('chatBody');
+
+toggleBtn.onclick = () => chatbot.classList.toggle('show');
+closeBtn.onclick = () => chatbot.classList.remove('show');
+
+const replies = [
+    {
+        keywords: ['name', 'who'],
+        answer: "My name is Ali Muhammad Ali, a technology and digital innovation student."
+    },
+    {
+        keywords: ['skills', 'skill'],
+        answer: "Ali’s skills include Python, HTML, CSS, JavaScript, Git & GitHub, and Data Analysis."
+    },
+    {
+        keywords: ['volunteer', 'experience'],
+        answer: "Ali volunteered as Vice Head of Media at DSC Cairo University, Marketing at Cairo University Racing Team, and Graphic Designer at LINK CU."
+    },
+    {
+        keywords: ['contact', 'email'],
+        answer: "You can contact Ali via the business form on this page or by email at alimohamedali851@gmail.com."
+    },
+    {
+        keywords: ['job', 'work', 'intern'],
+        answer: "Ali is open to internships, volunteering, and junior opportunities."
+    }
+];
+
+form.onsubmit = e => {
+    e.preventDefault();
+    const msg = input.value.toLowerCase();
+
+    body.innerHTML += `<div class="user-msg">${input.value}</div>`;
+    input.value = "";
+
+    let response = "Thanks for your message! You can ask about skills, volunteering, or contact info.";
+
+    for (let r of replies) {
+        if (r.keywords.some(k => msg.includes(k))) {
+            response = r.answer;
+            break;
+        }
+    }
+
+    setTimeout(() => {
+        body.innerHTML += `<div class="bot-msg">${response}</div>`;
+        body.scrollTop = body.scrollHeight;
+    }, 500);
+};
+</script>
 
 <body>
 

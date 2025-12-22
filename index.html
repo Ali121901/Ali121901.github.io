@@ -149,16 +149,20 @@ main {
 /* ===== CONTACT FORM ===== */
 form {
     display: flex;
-    flex-direction: column;
+    flex-direction: row-reverse;
     gap: 0.8rem;
+    justify-content: space-around;
+    align-content: space-between;
+    flex-wrap: wrap;
 }
 
 input, textarea {
     padding: 0.7rem;
-    border-radius: 10px;
     border: 1px solid var(--border);
     background: var(--glass);
     color: var(--text);
+    width: 282px;
+    height: 36px;
 }
 
 footer {
@@ -380,6 +384,11 @@ form.onsubmit = e => {
 <div class="card">
     <h2><i class="fa-solid fa-hands-helping"></i> Volunteering Experience</h2>
 
+  <div class="timeline-item">
+        <span class="dot"></span>
+        <p><strong>Marketing Member</strong> — Cairo University Racing Team</p>
+    </div>
+
     <div class="timeline-item">
         <span class="dot"></span>
         <p><strong>Vice Head of Media</strong> — DSC Cairo University</p>
@@ -387,17 +396,12 @@ form.onsubmit = e => {
 
     <div class="timeline-item">
         <span class="dot"></span>
-        <p><strong>Digital Marketing</strong> — DSC Cairo University</p>
+        <p><strong>Digital Marketing Member</strong> — DSC Cairo University</p>
     </div>
 
     <div class="timeline-item">
         <span class="dot"></span>
-        <p><strong>Marketing</strong> — Cairo University Racing Team</p>
-    </div>
-
-    <div class="timeline-item">
-        <span class="dot"></span>
-        <p><strong>Graphic Design</strong> — LINK CU</p>
+        <p><strong>Graphic Design Member</strong> — LINK CU</p>
     </div>
 </div>
 
@@ -430,8 +434,8 @@ form.onsubmit = e => {
     </div>
 
     <div class="skill">
-        <div class="skill-name"><span>Data Analysis</span><span>70%</span></div>
-        <div class="bar"><div class="fill" style="width:70%"></div></div>
+        <div class="skill-name"><span>Video Editing</span><span>90%</span></div>
+        <div class="bar"><div class="fill" style="width:90%"></div></div>
     </div>
 </div>
 

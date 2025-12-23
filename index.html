@@ -292,6 +292,7 @@ footer {
     </form>
 </div>
 <script>
+/* ================== ELEMENTS ================== */
 const chatbot = document.getElementById('chatbot');
 const toggleBtn = document.getElementById('chatbotToggle');
 const closeBtn = document.getElementById('closeChat');
@@ -299,68 +300,206 @@ const form = document.getElementById('chatForm');
 const input = document.getElementById('userInput');
 const body = document.getElementById('chatBody');
 
+/* ================== UI ================== */
 toggleBtn.onclick = () => chatbot.classList.toggle('show');
 closeBtn.onclick = () => chatbot.classList.remove('show');
 
+/* ================== MEMORY ================== */
+let lastTopics = [];
+const MAX_MEMORY = 2;
+
+/* ================== LANGUAGE ================== */
+function detectLanguage(text) {
+    return /[\u0600-\u06FF]/.test(text) ? "ar" : "en";
+}
+
+/* ================== UTILITIES ================== */
+function normalize(text) {
+    return text
+        .toLowerCase()
+        .replace(/[^\w\s\u0600-\u06FF]/g, "")
+        .trim();
+}
+
+function similarity(a, b) {
+    let matches = 0;
+    a.split("").forEach(ch => {
+        if (b.includes(ch)) matches++;
+    });
+    return matches / Math.max(a.length, b.length);
+}
+
+function remember(topic) {
+    if (!lastTopics.includes(topic)) {
+        lastTopics.push(topic);
+        if (lastTopics.length > MAX_MEMORY) lastTopics.shift();
+    }
+}
+
+/* ================== KNOWLEDGE BASE ================== */
 const knowledgeBase = [
     {
-        patterns: [/name/i, /who are you/i, /introduce yourself/i],
-        answer: "Hello! I’m Ali Muhammad Ali, a senior student passionate about technology, digital innovation, and volunteering. I love learning new skills and taking on challenges. Would you like to know about my skills or experience first?"
+        topic: "skills",
+        keywords: ["skills","skill","programming","code","مهارات","بتعرف","برمجة"],
+        answers: {
+            ar: [
+                "عندي مهارات في Python، Frontend Development، Git، و Video Editing.",
+                "بشتغل على تطوير الويب ومشاريع تقنية مختلفة."
+            ],
+            en: [
+                "I have skills in Python, frontend development, Git, and video editing.",
+                "I work on web development and various technical projects."
+            ]
+        }
     },
     {
-        patterns: [/skills/i, /what can you do/i, /technologies/i, /expertise/i, /programming/i],
-        answer: "Ali has a diverse skill set including:\n- Python (75%)\n- HTML (85%)\n- CSS (80%)\n- JavaScript (70%)\n- Git & GitHub (75%)\n- Video Editing (90%)\nThese skills are applied in projects, volunteering work, and personal initiatives. Do you want me to explain each skill in detail?"
+        topic: "experience",
+        keywords: ["experience","volunteer","projects","work","خبرة","تطوع","مشاريع"],
+        answers: {
+            ar: [
+                "عندي خبرة تطوعية ساعدتني أطور القيادة والعمل الجماعي.",
+                "اشتغلت في فرق طلابية ومبادرات مختلفة."
+            ],
+            en: [
+                "I have volunteering experience that developed leadership and teamwork skills.",
+                "I worked with student teams and different initiatives."
+            ]
+        }
     },
     {
-        patterns: [/volunteer/i, /experience/i, /projects/i, /activities/i, /work experience/i],
-        answer: "Ali’s volunteering experience includes:\n- Vice Head of Media at DSC Cairo University\n- Digital Marketing Member at DSC Cairo University\n- Marketing Member at Cairo University Racing Team\n- Graphic Design Member at LINK CU\nThese roles helped develop leadership, teamwork, and digital skills. Would you like to know what Ali learned from each role?"
+        topic: "education",
+        keywords: ["education","study","university","college","تعليم","جامعة","بدرس"],
+        answers: {
+            ar: [
+                "بدرس ترجمة إنجليزي في جامعة القاهرة، وتخرجي متوقع 2026."
+            ],
+            en: [
+                "I study English Translation at Cairo University, graduating in 2026."
+            ]
+        }
     },
     {
-        patterns: [/education/i, /study/i, /university/i, /college/i],
-        answer: "Ali is currently pursuing an English Translation degree at Cairo University, expected graduation in 2026. Education focuses on language, communication, and interdisciplinary learning. Do you want more details about his courses or achievements?"
-    },
-    {
-        patterns: [/contact/i, /email/i, /reach/i, /message/i, /get in touch/i],
-        answer: "You can contact Ali via the business inquiry form on this page or directly by email at alimohamedali851@gmail.com. He usually replies promptly!"
-    },
-    {
-        patterns: [/job/i, /intern/i, /work/i, /opportunity/i, /career/i],
-        answer: "Ali is open to internships, volunteering, and junior opportunities in technology, digital innovation, and data analysis. Are you looking for internship opportunities or collaboration?"
-    },
-    {
-        patterns: [/objective/i, /goal/i, /aim/i, /career objective/i],
-        answer: "Ali’s career objective is to gain hands-on experience in technology, data analysis, and digital innovation, while contributing positively to teams and projects."
-    },
-    {
-        patterns: [/thank/i, /thanks/i],
-        answer: "You’re welcome! 😊 If you have more questions about Ali’s skills, experience, or education, just ask!"
+        topic: "contact",
+        keywords: ["contact","email","reach","تواصل","ايميل"],
+        answers: {
+            ar: ["تقدر تتواصل معايا على: alimohamedali851@gmail.com"],
+            en: ["You can contact me at: alimohamedali851@gmail.com"]
+        }
     }
 ];
 
-function getReply(msg) {
-    for (let item of knowledgeBase) {
-        if (item.patterns.some(pattern => pattern.test(msg))) {
-            return item.answer;
+/* ================== RULE REASONING ================== */
+function ruleReasoning(msg, lang) {
+    if (msg.includes("لو") || msg.includes("if")) {
+        if (msg.includes("خبرة") || msg.includes("experience")) {
+            return lang === "ar"
+                ? "لو معندكش خبرة، ابدأ بالأساسيات واعمل مشاريع صغيرة وشارك في تطوع."
+                : "If you lack experience, start with basics, build small projects, and volunteer.";
+        }
+        if (msg.includes("شغل") || msg.includes("job") || msg.includes("intern")) {
+            return lang === "ar"
+                ? "لو عايز شغل، ركّز على مهارات مطلوبة واعمل بورتفوليو قوي."
+                : "If you want a job, focus on in-demand skills and build a strong portfolio.";
         }
     }
-    return "I’m here to answer questions about Ali’s CV, skills, volunteering, education, and contact info. Could you ask in another way?";
+    return null;
 }
 
+/* ================== AI CORE ================== */
+function getReply(message) {
+    const msg = normalize(message);
+    const lang = detectLanguage(message);
+
+    /* ===== SMALL TALK ===== */
+    const smallTalk = [
+        "ايه","ايه يابا","عامل ايه","ازيك","انت عامل ايه",
+        "hello","hi","hey","whats up","sup"
+    ];
+
+    if (smallTalk.some(t => msg.includes(t))) {
+        return lang === "ar"
+            ? "كله تمام 😄 تحب تسأل عن إيه؟ مهارات، خبرة، ولا حاجة تانية؟"
+            : "All good 😄 What would you like to know? Skills, experience, or something else?";
+    }
+
+    /* ===== NEGATION / RESET ===== */
+    const negative = [
+        "لا","مش","مش قصدي","سيبك","no","not really","leave it"
+    ];
+
+    if (negative.some(n => msg.includes(n))) {
+        lastTopics = [];
+        return lang === "ar"
+            ? "تمام 👍 قولي تحب تسأل عن إيه؟"
+            : "Alright 👍 What would you like to ask about?";
+    }
+
+    /* ===== RULE BASED ===== */
+    const rule = ruleReasoning(msg, lang);
+    if (rule) return rule;
+
+    /* ===== INTENT MATCHING ===== */
+    let matchedTopics = [];
+
+    knowledgeBase.forEach(item => {
+        let score = 0;
+        item.keywords.forEach(k => {
+            if (msg.includes(k) || similarity(msg, k) > 0.6) score++;
+        });
+        if (score > 0) matchedTopics.push(item);
+    });
+
+    /* ===== MULTI INTENT ===== */
+    if (matchedTopics.length > 1) {
+        matchedTopics.forEach(t => remember(t.topic));
+        return matchedTopics
+            .map(t => t.answers[lang][0])
+            .join("<br>");
+    }
+
+    /* ===== SINGLE INTENT ===== */
+    if (matchedTopics.length === 1) {
+        remember(matchedTopics[0].topic);
+        const answers = matchedTopics[0].answers[lang];
+        return answers[Math.floor(Math.random() * answers.length)];
+    }
+
+    /* ===== SMART FALLBACK ===== */
+    return lang === "ar"
+        ? "مش فاهم قصدك قوي 🤔 بس تقدر تسأل عن مهاراتي، خبرتي، دراستي، أو التواصل."
+        : "I’m not sure I got that 🤔 You can ask about my skills, experience, education, or contact.";
+}
+
+/* ================== UI OUTPUT ================== */
+function typeMessage(text) {
+    const div = document.createElement("div");
+    div.className = "bot-msg";
+    body.appendChild(div);
+
+    let i = 0;
+    const typing = setInterval(() => {
+        div.innerHTML += text.charAt(i);
+        i++;
+        body.scrollTop = body.scrollHeight;
+        if (i >= text.length) clearInterval(typing);
+    }, 15);
+}
+
+/* ================== FORM ================== */
 form.onsubmit = e => {
     e.preventDefault();
-    const userText = input.value;
-    body.innerHTML += `<div class="user-msg">${userText}</div>`;
+    const text = input.value.trim();
+    if (!text) return;
+
+    body.innerHTML += `<div class="user-msg">${text}</div>`;
     input.value = "";
     body.scrollTop = body.scrollHeight;
 
-    const response = getReply(userText.toLowerCase());
-
-    setTimeout(() => {
-        body.innerHTML += `<div class="bot-msg">${response.replace(/\n/g,"<br>")}</div>`;
-        body.scrollTop = body.scrollHeight;
-    }, 500);
+    const reply = getReply(text);
+    setTimeout(() => typeMessage(reply), 250);
 };
 </script>
+
 <body>
 
 <header>
@@ -483,4 +622,5 @@ form.onsubmit = e => {
 
 </body>
 </html>
+
 
